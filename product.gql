@@ -1,0 +1,71 @@
+const products = gql`
+    enum bikeType {
+        KID
+        MOUNTAIN
+        ELECTRIC
+        BEACH
+    }
+    enum type {
+        GAMING_PC
+        BIKE
+        DRONE
+    }
+    type Product {
+        name: String!
+        price: Int!
+        image: String!
+        description: String!
+        liquidCooled: Boolean!
+        range: String!
+         
+    }
+    type Query {
+        getProduct: [Product]        
+    }
+
+    input Product {
+        name: String!
+        price: Int!
+        image: String!
+        description: String!
+        liquidCooled: Boolean!
+        range: String!
+        biketype: bikeType
+        type: type
+    }
+`;
+//Step 4. Create resolvers for showing the data. Every query and mutation type must have a resolver
+const resolvers = {
+ Query: {
+    getProduct: () => products
+ },
+ // Step 4.1 Create mutation to change the data
+ Mutation: {
+     setProduct: (_, args) => {
+         const newProduct = {
+             id:`product-${idCount++}`,
+             name: args.name,
+             price: args.price,
+             image: args.image,
+             type: args.type,
+             description: args.description,
+             liquidcooled: args.liquidcooled,
+             biketype: args.biketype,
+             range: args.range
+
+         }
+         products.push(newProduct);
+         return newProduct;
+     }
+ }
+
+
+};
+
+//Step 5. Create server
+
+const server = new ApolloServer({ typeDefs, resolvers});
+
+server.listen().then(({ url }) => {
+    console.log(`Sever ready at ${url}`);
+})
